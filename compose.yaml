@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  proxy:
+    image: nginx:alpine
+    container_name: matrix-internal-proxy
+    ports:
+      - 18080:80
+    environment:
+      - DOMAIN_BASE=${DOMAIN_BASE}
+      - DOMAIN_MATRIX=${DOMAIN_MATRIX}
+      - DOMAIN_LIVEKIT=${DOMAIN_LIVEKIT}
+      - DOMAIN_AUTH=${DOMAIN_AUTH}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./proxy.conf.template:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      - continuwuity
+      - auth
+    restart: unless-stopped
+
+  continuwuity:
+    image: forgejo.ellis.link/continuwuation/continuwuity:latest
+    container_name: matrix-continuwuity
+    environment:
+      - CONTINUWUITY_CONFIG=/etc/continuwuity.toml
+    volumes:
+      - ./db:/var/lib/continuwuity
+      - ./continuwuity.toml:/etc/continuwuity.toml:ro
+    restart: unless-stopped
+
+  auth:
+    image: ghcr.io/element-hq/lk-jwt-service:latest
+    container_name: matrix-auth
+    environment:
+      - LIVEKIT_JWT_BIND=0.0.0.0:8080
+      - LIVEKIT_URL=https://${DOMAIN_LIVEKIT}
+      - LIVEKIT_KEY=devkey
+      - LIVEKIT_SECRET=${SECRET_TOKEN}
+      - LIVEKIT_FULL_ACCESS_HOMESERVERS=${DOMAIN_BASE}
+    restart: unless-stopped
+
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: matrix-livekit
+    command: --config /etc/livekit.yaml
+    ports:
+      - 7880:7880/tcp # API
+      - 7881:7881/tcp # Signal/TCP fallback
+      - 3478:3478/udp # TURN
+      - 50100-50200:50100-50200/udp # LiveKit Media
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    restart: unless-stopped
+
+networks:
+  default:
+    name: matrix-net
