@@ -13,6 +13,8 @@ registration_token = "${SECRET_TOKEN}"
 allow_encryption = true
 allow_federation = true
 trusted_servers = ["matrix.org"]
+turn_uris = ["turn:comeget.club:3478?transport=tcp", "turn:comeget.club:3478?transport=udp"]
+turn_secret = "${SECRET_TOKEN}"
 
 allow_local_presence = true
 allow_incoming_presence = true
