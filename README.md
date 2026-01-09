@@ -18,17 +18,18 @@
 ### Проброс портов на роутере
 Направьте на локальный IP Synology:
 - TCP: 80 (HTTP), 443 (HTTPS) - традиционно
-- TCP/UDP: 3478 (Matrix TURN) - необязательно
-- TCP: 7881 (LiveKit Signal/TCP fallback) - необязательно
-- UDP: 30000-40000 (LiveKit Media TURN relay) - необязательно
 - UDP: 50100-50200 (LiveKit Media)
+Не обязательно:
+- TCP/UDP: 3478 (Matrix TURN)
+- TCP: 7881 (LiveKit Signal/TCP fallback)
+- UDP: 30000-40000 (LiveKit Media TURN relay)
 
 ### Настройка Synology Reverse Proxy
 Для каждого поддомена создайте правила в `Панель управления` > `Портал для входа` > `Дополнительно` > `Обратный прокси`:
 - `matrix.example.com:443` -> `http://localhost:18080` (WebSocket: ON)
 - `auth.example.com:443` -> `http://localhost:18080` (WebSocket: ON)
 - `livekit.example.com:443` -> `http://localhost:18080` (WebSocket: ON)
-- `example.com:443` -> `http://localhost:18080` (WebSocket: ON) - необязательно, см. [Нюансы](#нюансы-развёртывания) ниже
+- `example.com:443` -> `http://localhost:18080` (WebSocket: ON) - необязательно, но желательно, см. [Нюансы](#нюансы-развёртывания) ниже
 
 ## Развёртывание
 
@@ -47,7 +48,7 @@ curl -sLO https://raw.githubusercontent.com/arabezar/howto-synology-matrix-conti
 <summary>приблизительный лог работы скрипта</summary>
 
 ```bash
-ash-4.4# curl -sLO https://raw.githubusercontent.com/arabezar/howto-synology-matrix-dendrite/main/install.sh && chmod +x install.sh && ./install.sh
+ash-4.4# curl -sLO https://raw.githubusercontent.com/arabezar/matrix-continuwuity-synology/main/install.sh && chmod +x install.sh && ./install.sh
 Установка Matrix Continuwuity + LiveKit in Docker v0.0.1...
 Проверка необходимых условий...
 Задайте папку проекта [matrix-continuwuity] (Enter - подтвердить):
@@ -134,4 +135,4 @@ testmatrix -u admin -t <token> exemple.com
 
 ## Вклад
 
-- Предложения и замечания категорически приветствуются [здесь](https://github.com/arabezar/howto-synology-matrix-continuwuity/discussions)
+- Предложения и замечания категорически приветствуются [здесь](https://github.com/arabezar/matrix-continuwuity-synology/discussions)
